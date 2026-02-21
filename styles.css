@@ -14,17 +14,21 @@
 /* Calendar Header */
 .calendar-header {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     align-items: center;
+    gap: 8px;
     margin-bottom: 16px;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.calendar-header-left {
+.calendar-header-controls {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
+    width: 100%;
 }
 
 .calendar-nav-button {
@@ -74,56 +78,54 @@
     background: var(--background-primary);
     border: 1px solid var(--background-modifier-border);
     border-radius: 8px;
-    padding: 12px;
+    padding: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 1000;
-    min-width: 280px;
+    display: flex;
+    gap: 8px;
 }
 
 .calendar-year-selector {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    margin-bottom: 12px;
-    max-height: 200px;
+    gap: 2px;
+    max-height: 300px;
     overflow-y: auto;
     padding: 4px;
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 4px;
 }
 
 .calendar-year-selector::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 .calendar-year-selector::-webkit-scrollbar-track {
-    background: var(--background-secondary);
-    border-radius: 4px;
+    background: transparent;
 }
 
 .calendar-year-selector::-webkit-scrollbar-thumb {
-    background: var(--interactive-accent);
-    border-radius: 4px;
+    background: var(--background-modifier-border);
+    border-radius: 3px;
 }
 
 .calendar-year-selector::-webkit-scrollbar-thumb:hover {
-    background: var(--interactive-accent-hover);
+    background: var(--text-muted);
 }
 
 .calendar-year-option {
-    background: var(--background-secondary);
+    background: transparent;
     border: none;
     padding: 6px 12px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    color: var(--text-muted);
+    color: var(--text-normal);
     font-size: 13px;
     white-space: nowrap;
+    text-align: center;
+    transition: background 0.1s ease;
 }
 
 .calendar-year-option:hover {
-    background: var(--interactive-hover);
-    color: var(--text-normal);
+    background: var(--background-modifier-hover);
 }
 
 .calendar-year-option.active {
@@ -131,25 +133,46 @@
     color: var(--text-on-accent);
 }
 
-.calendar-month-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+.calendar-month-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.calendar-month-selector::-webkit-scrollbar {
+    width: 6px;
+}
+
+.calendar-month-selector::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.calendar-month-selector::-webkit-scrollbar-thumb {
+    background: var(--background-modifier-border);
+    border-radius: 3px;
+}
+
+.calendar-month-selector::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
 }
 
 .calendar-month-option {
-    background: var(--background-secondary);
+    background: transparent;
     border: none;
-    padding: 8px;
-    border-radius: 4px;
+    padding: 6px 12px;
+    border-radius: 6px;
     cursor: pointer;
-    color: var(--text-muted);
+    color: var(--text-normal);
     font-size: 13px;
+    text-align: left;
+    transition: background 0.1s ease;
 }
 
 .calendar-month-option:hover {
-    background: var(--interactive-hover);
-    color: var(--text-normal);
+    background: var(--background-modifier-hover);
 }
 
 .calendar-month-option.active {
@@ -365,23 +388,13 @@
     }
 }
 
-/* Toolbar Styles */
-.calendar-toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 12px 0;
-    margin-bottom: 12px;
-    border-bottom: 1px solid var(--background-modifier-border);
-    align-items: flex-start;
-}
-
 /* Folder Display */
 .calendar-folder-display {
     display: flex;
     align-items: center;
     gap: 8px;
     position: relative;
+    margin-left: auto;
 }
 
 .calendar-folder-label {
@@ -447,16 +460,14 @@
 /* Tag Filter */
 .calendar-tag-filter {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
-    flex: 1;
 }
 
 .calendar-filter-label {
     font-size: 13px;
     color: var(--text-muted);
     font-weight: 500;
-    padding-top: 4px;
 }
 
 .calendar-filter-tags {
@@ -531,26 +542,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     flex: 1;
-}
-
-.calendar-note-preview-close {
-    background: transparent;
-    border: none;
-    font-size: 24px;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 0;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-}
-
-.calendar-note-preview-close:hover {
-    background: var(--interactive-hover);
-    color: var(--text-normal);
 }
 
 .calendar-note-preview-content {

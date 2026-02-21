@@ -42,12 +42,12 @@ export const NotePreview: React.FC<NotePreviewProps> = ({ filePath, app, onClose
             let y = position.y;
 
             // Adjust if preview goes off right edge
-            if (x + rect.width > viewportWidth) {
+            if (x + rect.width > viewportWidth - 20) {
                 x = viewportWidth - rect.width - 20;
             }
 
             // Adjust if preview goes off bottom edge
-            if (y + rect.height > viewportHeight) {
+            if (y + rect.height > viewportHeight - 20) {
                 y = viewportHeight - rect.height - 20;
             }
 
@@ -72,13 +72,6 @@ export const NotePreview: React.FC<NotePreviewProps> = ({ filePath, app, onClose
                 <span className="calendar-note-preview-title">
                     {filePath.split('/').pop()?.replace('.md', '')}
                 </span>
-                <button
-                    className="calendar-note-preview-close"
-                    onClick={onClose}
-                    aria-label="Close preview"
-                >
-                    ×
-                </button>
             </div>
             <div className="calendar-note-preview-content">
                 {loading ? (

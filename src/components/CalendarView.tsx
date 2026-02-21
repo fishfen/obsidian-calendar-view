@@ -25,7 +25,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const [currentDate, setCurrentDate] = React.useState(new Date());
     const [currentFolder, setCurrentFolder] = React.useState(settings.sourceFolder);
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
-    const [showFolderPicker, setShowFolderPicker] = React.useState(false);
     const [previewNote, setPreviewNote] = React.useState<{ path: string; position: { x: number; y: number } } | null>(null);
 
     // Update current folder when settings change
@@ -84,13 +83,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         );
     };
 
-    const handleFolderClick = () => {
-        setShowFolderPicker(!showFolderPicker);
-    };
-
     const handleFolderSelect = (folder: string) => {
         setCurrentFolder(folder);
-        setShowFolderPicker(false);
         onFolderChange(folder);
     };
 
@@ -112,7 +106,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     };
 
     const handlePreviewNote = (filePath: string, position: { x: number; y: number }) => {
-        setPreviewNote({ path: filePath, position });
+        // If position is negative, close the preview
+        if (position.x < 0 || position.y < 0) {
+            setPreviewNote(null);
+        } else {
+            setPreviewNote({ path: filePath, position });
+        }
     };
 
     const handleClosePreview = () => {
@@ -134,64 +133,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 onNext={goToNextMonth}
                 onToday={goToToday}
                 onMonthYearChange={handleMonthYearChange}
+                currentFolder={currentFolder}
+                onFolderSelect={handleFolderSelect}
+                getFolderList={getFolderList}
+                allTags={allTags}
+                selectedTags={selectedTags}
+                toggleTag={toggleTag}
+                clearTags={() => setSelectedTags([])}
             />
-            <div className="calendar-toolbar">
-                <div className="calendar-folder-display">
-                    <span className="calendar-folder-label">Folder:</span>
-                    <button
-                        className="calendar-folder-button"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleFolderClick();
-                        }}
-                    >
-                        {currentFolder || '(Root)'}
-                    </button>
-                    {showFolderPicker && (
-                        <div className="calendar-folder-picker" onClick={(e) => e.stopPropagation()}>
-                            {getFolderList().map(folder => (
-                                <button
-                                    key={folder || 'root'}
-                                    className={`calendar-folder-option ${folder === currentFolder ? 'active' : ''}`}
-                                    onClick={() => handleFolderSelect(folder)}
-                                >
-                                    {folder || '(Root)'}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
-                {allTags.length > 0 && (
-                    <div className="calendar-tag-filter">
-                        <span className="calendar-filter-label">Filter:</span>
-                        <div className="calendar-filter-tags">
-                            {allTags.map(tag => (
-                                <button
-                                    key={tag}
-                                    className={`calendar-filter-tag ${selectedTags.includes(tag) ? 'active' : ''}`}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        toggleTag(tag);
-                                    }}
-                                >
-                                    {tag}
-                                </button>
-                            ))}
-                            {selectedTags.length > 0 && (
-                                <button
-                                    className="calendar-filter-clear"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedTags([]);
-                                    }}
-                                >
-                                    Clear
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
             <CalendarGrid
                 currentDate={currentDate}
                 events={filteredEvents}

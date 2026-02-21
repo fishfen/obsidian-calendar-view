@@ -10,6 +10,7 @@ export const VIEW_TYPE_CALENDAR = 'folder-calendar-view';
 export class CalendarViewType extends ItemView {
     plugin: FolderCalendarPlugin;
     root: ReactDOM.Root | null = null;
+    currentFolder: string | null = null;
 
     constructor(leaf: WorkspaceLeaf, plugin: FolderCalendarPlugin) {
         super(leaf);
@@ -64,13 +65,14 @@ export class CalendarViewType extends ItemView {
     handleFolderChange(folder: string): void {
         // Temporarily change the folder for this view only
         // This doesn't save to settings
+        this.currentFolder = folder;
         this.renderCalendar();
     }
 
-    getEventsFromVault(folder?: string): NoteEvent[] {
+    getEventsFromVault(): NoteEvent[] {
         const events: NoteEvent[] = [];
         const { sourceFolder, dateField } = this.plugin.settings;
-        const targetFolder = folder !== undefined ? folder : sourceFolder;
+        const targetFolder = this.currentFolder !== null ? this.currentFolder : sourceFolder;
 
         const files = this.app.vault.getMarkdownFiles();
 
@@ -132,19 +134,21 @@ export class CalendarViewType extends ItemView {
 
     async handleDateClick(date: Date): Promise<void> {
         const { sourceFolder, dateField } = this.plugin.settings;
-        const folder = sourceFolder || '';
+        const targetFolder = this.currentFolder !== null ? this.currentFolder : sourceFolder;
+        const folder = targetFolder || '';
 
         const dateStr = this.formatDate(date);
-        const fileName = `${dateStr}.md`;
-        const filePath = folder ? `${folder}/${fileName}` : fileName;
 
-        // Check if file already exists
-        const existingFile = this.app.vault.getAbstractFileByPath(filePath);
-        if (existingFile) {
-            if (existingFile instanceof TFile) {
-                await this.app.workspace.getLeaf(false).openFile(existingFile);
-            }
-            return;
+        // Always create a new file with "Untitled" as the name
+        let fileName = 'Untitled.md';
+        let filePath = folder ? `${folder}/${fileName}` : fileName;
+        let counter = 1;
+
+        // Find a unique name if "Untitled.md" already exists
+        while (this.app.vault.getAbstractFileByPath(filePath)) {
+            fileName = `Untitled ${counter}.md`;
+            filePath = folder ? `${folder}/${fileName}` : fileName;
+            counter++;
         }
 
         // Create new file with frontmatter

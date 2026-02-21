@@ -10,12 +10,15 @@ interface NoteCardProps {
 
 export const NoteCard: React.FC<NoteCardProps> = ({ event, settings, onClick, onPreview }) => {
     const [hoverTimeout, setHoverTimeout] = React.useState<NodeJS.Timeout | null>(null);
+    const cardRef = React.useRef<HTMLDivElement>(null);
 
     const handleMouseEnter = (e: React.MouseEvent) => {
-        const rect = (e.target as HTMLElement).getBoundingClientRect();
+        const rect = cardRef.current?.getBoundingClientRect();
+        if (!rect) return;
+
         const position = {
-            x: rect.right + 10,
-            y: rect.top
+            x: rect.left,
+            y: rect.bottom + 5
         };
 
         const timeout = setTimeout(() => {
@@ -30,6 +33,8 @@ export const NoteCard: React.FC<NoteCardProps> = ({ event, settings, onClick, on
             clearTimeout(hoverTimeout);
             setHoverTimeout(null);
         }
+        // Close preview by passing a negative position
+        onPreview({ x: -1, y: -1 });
     };
 
     const handleClick = (e: React.MouseEvent) => {
@@ -59,6 +64,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({ event, settings, onClick, on
 
     return (
         <div
+            ref={cardRef}
             className="calendar-card"
             onClick={handleClick}
             onMouseEnter={handleMouseEnter}

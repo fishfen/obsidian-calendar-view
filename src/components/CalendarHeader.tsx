@@ -6,6 +6,13 @@ interface CalendarHeaderProps {
     onNext: () => void;
     onToday: () => void;
     onMonthYearChange: (year: number, month: number) => void;
+    currentFolder: string;
+    onFolderSelect: (folder: string) => void;
+    getFolderList: () => string[];
+    allTags: string[];
+    selectedTags: string[];
+    toggleTag: (tag: string) => void;
+    clearTags: () => void;
 }
 
 export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
@@ -13,11 +20,21 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     onPrevious,
     onNext,
     onToday,
-    onMonthYearChange
+    onMonthYearChange,
+    currentFolder,
+    onFolderSelect,
+    getFolderList,
+    allTags,
+    selectedTags,
+    toggleTag,
+    clearTags
 }) => {
     const [showPicker, setShowPicker] = React.useState(false);
+    const [showFolderPicker, setShowFolderPicker] = React.useState(false);
     const pickerRef = React.useRef<HTMLDivElement>(null);
+    const folderRef = React.useRef<HTMLDivElement>(null);
     const yearScrollRef = React.useRef<HTMLDivElement>(null);
+    const monthScrollRef = React.useRef<HTMLDivElement>(null);
 
     const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -38,33 +55,49 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
             if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
                 setShowPicker(false);
             }
+            if (folderRef.current && !folderRef.current.contains(event.target as Node)) {
+                setShowFolderPicker(false);
+            }
         };
 
-        if (showPicker) {
+        if (showPicker || showFolderPicker) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showPicker]);
+    }, [showPicker, showFolderPicker]);
 
-    // Scroll to current year when picker opens
+    // Scroll to current year and month when picker opens
     React.useEffect(() => {
-        if (showPicker && yearScrollRef.current) {
-            const currentYearIndex = years.indexOf(currentYear);
-            if (currentYearIndex !== -1) {
-                const yearButton = yearScrollRef.current.children[currentYearIndex] as HTMLElement;
-                if (yearButton) {
-                    yearButton.scrollIntoView({ block: 'center' });
+        if (showPicker) {
+            if (yearScrollRef.current) {
+                const currentYearIndex = years.indexOf(currentYear);
+                if (currentYearIndex !== -1) {
+                    const yearButton = yearScrollRef.current.children[currentYearIndex] as HTMLElement;
+                    if (yearButton) {
+                        yearButton.scrollIntoView({ block: 'center' });
+                    }
+                }
+            }
+            if (monthScrollRef.current) {
+                const monthButton = monthScrollRef.current.children[currentMonth] as HTMLElement;
+                if (monthButton) {
+                    monthButton.scrollIntoView({ block: 'center' });
                 }
             }
         }
-    }, [showPicker, currentYear, years]);
+    }, [showPicker, currentYear, currentMonth, years]);
 
     const handlePickerSelect = (year: number, month: number) => {
         onMonthYearChange(year, month);
         setShowPicker(false);
+    };
+
+    const handleFolderClick = (folder: string) => {
+        onFolderSelect(folder);
+        setShowFolderPicker(false);
     };
 
     // Format date as "yyyy mm"
@@ -76,7 +109,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 
     return (
         <div className="calendar-header">
-            <div className="calendar-header-left">
+            <div className="calendar-header-controls">
                 <button
                     className="calendar-nav-button"
                     onClick={onPrevious}
@@ -87,12 +120,15 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
                 <div className="calendar-month-year" ref={pickerRef}>
                     <button
                         className="calendar-month-year-button"
-                        onClick={() => setShowPicker(!showPicker)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowPicker(!showPicker);
+                        }}
                     >
                         {formatDate()}
                     </button>
                     {showPicker && (
-                        <div className="calendar-month-picker">
+                        <div className="calendar-month-picker" onClick={(e) => e.stopPropagation()}>
                             <div className="calendar-year-selector" ref={yearScrollRef}>
                                 {years.map(year => (
                                     <button
@@ -104,14 +140,14 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
                                     </button>
                                 ))}
                             </div>
-                            <div className="calendar-month-grid">
+                            <div className="calendar-month-selector" ref={monthScrollRef}>
                                 {monthNames.map((month, index) => (
                                     <button
                                         key={month}
                                         className={`calendar-month-option ${index === currentMonth ? 'active' : ''}`}
                                         onClick={() => handlePickerSelect(currentYear, index)}
                                     >
-                                        {month.slice(0, 3)}
+                                        {month}
                                     </button>
                                 ))}
                             </div>
@@ -125,13 +161,68 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
                 >
                     &gt;
                 </button>
+                <button
+                    className="calendar-today-button"
+                    onClick={onToday}
+                >
+                    Today
+                </button>
+                <div className="calendar-folder-display" ref={folderRef}>
+                    <span className="calendar-folder-label">Folder:</span>
+                    <button
+                        className="calendar-folder-button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowFolderPicker(!showFolderPicker);
+                        }}
+                    >
+                        {currentFolder || '(Root)'}
+                    </button>
+                    {showFolderPicker && (
+                        <div className="calendar-folder-picker" onClick={(e) => e.stopPropagation()}>
+                            {getFolderList().map(folder => (
+                                <button
+                                    key={folder || 'root'}
+                                    className={`calendar-folder-option ${folder === currentFolder ? 'active' : ''}`}
+                                    onClick={() => handleFolderClick(folder)}
+                                >
+                                    {folder || '(Root)'}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+                {allTags.length > 0 && (
+                    <div className="calendar-tag-filter">
+                        <span className="calendar-filter-label">Filter:</span>
+                        <div className="calendar-filter-tags">
+                            {allTags.map(tag => (
+                                <button
+                                    key={tag}
+                                    className={`calendar-filter-tag ${selectedTags.includes(tag) ? 'active' : ''}`}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleTag(tag);
+                                    }}
+                                >
+                                    {tag}
+                                </button>
+                            ))}
+                            {selectedTags.length > 0 && (
+                                <button
+                                    className="calendar-filter-clear"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        clearTags();
+                                    }}
+                                >
+                                    Clear
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
-            <button
-                className="calendar-today-button"
-                onClick={onToday}
-            >
-                Today
-            </button>
         </div>
     );
 };
