@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { App } from 'obsidian';
 import { NoteEvent, FolderCalendarSettings } from '../types';
 import { DateCell } from './DateCell';
 
@@ -6,16 +7,20 @@ interface CalendarGridProps {
     currentDate: Date;
     events: NoteEvent[];
     settings: FolderCalendarSettings;
+    app: App;
     onDateClick: (date: Date) => void;
     onNoteClick: (filePath: string) => void;
+    onPreviewNote: (filePath: string, position: { x: number; y: number }) => void;
 }
 
 export const CalendarGrid: React.FC<CalendarGridProps> = ({
     currentDate,
     events,
     settings,
+    app,
     onDateClick,
-    onNoteClick
+    onNoteClick,
+    onPreviewNote
 }) => {
     const weekDays = settings.startOfWeek === 'monday'
         ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -96,8 +101,10 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                             isToday={isToday}
                             events={dateEvents}
                             settings={settings}
+                            app={app}
                             onDateClick={onDateClick}
                             onNoteClick={onNoteClick}
+                            onPreviewNote={onPreviewNote}
                         />
                     );
                 })}

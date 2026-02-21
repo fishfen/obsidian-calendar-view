@@ -3,13 +3,15 @@ export interface FolderCalendarSettings {
     dateField: string;
     displayProperties: string[];
     startOfWeek: 'monday' | 'sunday';
+    hoverPreviewDelay: number; // in milliseconds
 }
 
 export const DEFAULT_SETTINGS: FolderCalendarSettings = {
     sourceFolder: '',
     dateField: 'date',
     displayProperties: ['tags'],
-    startOfWeek: 'monday'
+    startOfWeek: 'monday',
+    hoverPreviewDelay: 500
 };
 
 export interface NoteEvent {

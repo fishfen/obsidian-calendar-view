@@ -17,6 +17,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 }) => {
     const [showPicker, setShowPicker] = React.useState(false);
     const pickerRef = React.useRef<HTMLDivElement>(null);
+    const yearScrollRef = React.useRef<HTMLDivElement>(null);
 
     const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -25,6 +26,11 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
+
+    // Generate years from 1900 to 2100
+    const years = React.useMemo(() => {
+        return Array.from({ length: 201 }, (_, i) => 1900 + i);
+    }, []);
 
     // Close picker when clicking outside
     React.useEffect(() => {
@@ -43,12 +49,30 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         };
     }, [showPicker]);
 
+    // Scroll to current year when picker opens
+    React.useEffect(() => {
+        if (showPicker && yearScrollRef.current) {
+            const currentYearIndex = years.indexOf(currentYear);
+            if (currentYearIndex !== -1) {
+                const yearButton = yearScrollRef.current.children[currentYearIndex] as HTMLElement;
+                if (yearButton) {
+                    yearButton.scrollIntoView({ block: 'center' });
+                }
+            }
+        }
+    }, [showPicker, currentYear, years]);
+
     const handlePickerSelect = (year: number, month: number) => {
         onMonthYearChange(year, month);
         setShowPicker(false);
     };
 
-    const years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
+    // Format date as "yyyy mm"
+    const formatDate = () => {
+        const year = currentYear;
+        const month = String(currentMonth + 1).padStart(2, '0');
+        return `${year} ${month}`;
+    };
 
     return (
         <div className="calendar-header">
@@ -65,11 +89,11 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
                         className="calendar-month-year-button"
                         onClick={() => setShowPicker(!showPicker)}
                     >
-                        {monthNames[currentMonth]} {currentYear}
+                        {formatDate()}
                     </button>
                     {showPicker && (
                         <div className="calendar-month-picker">
-                            <div className="calendar-year-selector">
+                            <div className="calendar-year-selector" ref={yearScrollRef}>
                                 {years.map(year => (
                                     <button
                                         key={year}
@@ -84,7 +108,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
                                 {monthNames.map((month, index) => (
                                     <button
                                         key={month}
-                                        className={`calendar-month-option ${index === currentMonth && currentYear === currentYear ? 'active' : ''}`}
+                                        className={`calendar-month-option ${index === currentMonth ? 'active' : ''}`}
                                         onClick={() => handlePickerSelect(currentYear, index)}
                                     >
                                         {month.slice(0, 3)}

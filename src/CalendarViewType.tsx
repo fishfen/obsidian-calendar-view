@@ -21,7 +21,7 @@ export class CalendarViewType extends ItemView {
     }
 
     getDisplayText(): string {
-        return 'Folder Calendar';
+        return 'Calendar View';
     }
 
     getIcon(): string {
@@ -53,21 +53,30 @@ export class CalendarViewType extends ItemView {
             React.createElement(CalendarView, {
                 events,
                 settings: this.plugin.settings,
+                app: this.app,
                 onDateClick: this.handleDateClick.bind(this),
                 onNoteClick: this.handleNoteClick.bind(this),
+                onFolderChange: this.handleFolderChange.bind(this),
             })
         );
     }
 
-    getEventsFromVault(): NoteEvent[] {
+    handleFolderChange(folder: string): void {
+        // Temporarily change the folder for this view only
+        // This doesn't save to settings
+        this.renderCalendar();
+    }
+
+    getEventsFromVault(folder?: string): NoteEvent[] {
         const events: NoteEvent[] = [];
         const { sourceFolder, dateField } = this.plugin.settings;
+        const targetFolder = folder !== undefined ? folder : sourceFolder;
 
         const files = this.app.vault.getMarkdownFiles();
 
         for (const file of files) {
             // Filter by folder
-            if (sourceFolder && !file.path.startsWith(sourceFolder)) {
+            if (targetFolder && !file.path.startsWith(targetFolder)) {
                 continue;
             }
 

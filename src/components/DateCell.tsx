@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { App } from 'obsidian';
 import { NoteEvent, FolderCalendarSettings } from '../types';
 import { NoteCard } from './NoteCard';
 
@@ -8,8 +9,10 @@ interface DateCellProps {
     isToday: boolean;
     events: NoteEvent[];
     settings: FolderCalendarSettings;
+    app: App;
     onDateClick: (date: Date) => void;
     onNoteClick: (filePath: string) => void;
+    onPreviewNote: (filePath: string, position: { x: number; y: number }) => void;
 }
 
 export const DateCell: React.FC<DateCellProps> = ({
@@ -18,8 +21,10 @@ export const DateCell: React.FC<DateCellProps> = ({
     isToday,
     events,
     settings,
+    app,
     onDateClick,
-    onNoteClick
+    onNoteClick,
+    onPreviewNote
 }) => {
     const [isHovered, setIsHovered] = React.useState(false);
     const [showAll, setShowAll] = React.useState(false);
@@ -64,6 +69,7 @@ export const DateCell: React.FC<DateCellProps> = ({
                         event={event}
                         settings={settings}
                         onClick={() => onNoteClick(event.file)}
+                        onPreview={(position) => onPreviewNote(event.file, position)}
                     />
                 ))}
                 {!showAll && hiddenCount > 0 && (

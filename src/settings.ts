@@ -13,7 +13,7 @@ export class FolderCalendarSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'Folder Calendar Settings' });
+        containerEl.createEl('h2', { text: 'Calendar View Settings' });
 
         // Source Folder Setting
         new Setting(containerEl)
@@ -74,6 +74,21 @@ export class FolderCalendarSettingTab extends PluginSettingTab {
                     this.plugin.settings.startOfWeek = value as 'monday' | 'sunday';
                     await this.plugin.saveSettings();
                     this.plugin.refreshViews();
+                }));
+
+        // Hover Preview Delay Setting
+        new Setting(containerEl)
+            .setName('Hover Preview Delay')
+            .setDesc('Time in milliseconds before showing note preview on hover (default: 500)')
+            .addText(text => text
+                .setPlaceholder('500')
+                .setValue(String(this.plugin.settings.hoverPreviewDelay))
+                .onChange(async (value) => {
+                    const delay = parseInt(value);
+                    if (!isNaN(delay) && delay >= 0) {
+                        this.plugin.settings.hoverPreviewDelay = delay;
+                        await this.plugin.saveSettings();
+                    }
                 }));
     }
 

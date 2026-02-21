@@ -5,6 +5,7 @@ import { CalendarViewType, VIEW_TYPE_CALENDAR } from './src/CalendarViewType';
 
 export default class FolderCalendarPlugin extends Plugin {
     settings: FolderCalendarSettings;
+    private refreshTimeout: NodeJS.Timeout | null = null;
 
     async onload() {
         await this.loadSettings();
@@ -16,14 +17,14 @@ export default class FolderCalendarPlugin extends Plugin {
         );
 
         // Add ribbon icon
-        this.addRibbonIcon('calendar', 'Open Folder Calendar', () => {
+        this.addRibbonIcon('calendar', 'Open Calendar View', () => {
             this.activateView();
         });
 
         // Add command to open calendar
         this.addCommand({
-            id: 'open-folder-calendar',
-            name: 'Open Folder Calendar',
+            id: 'open-calendar-view',
+            name: 'Open Calendar View',
             callback: () => {
                 this.activateView();
             }
@@ -32,28 +33,35 @@ export default class FolderCalendarPlugin extends Plugin {
         // Add settings tab
         this.addSettingTab(new FolderCalendarSettingTab(this.app, this));
 
-        // Listen for file changes to refresh the view
+        // Listen for file changes to refresh the view with debouncing
         this.registerEvent(
-            this.app.vault.on('modify', () => {
-                this.refreshViews();
+            this.app.vault.on('modify', (file) => {
+                this.debouncedRefresh();
             })
         );
 
         this.registerEvent(
-            this.app.vault.on('create', () => {
-                this.refreshViews();
+            this.app.vault.on('create', (file) => {
+                this.debouncedRefresh();
             })
         );
 
         this.registerEvent(
-            this.app.vault.on('delete', () => {
-                this.refreshViews();
+            this.app.vault.on('delete', (file) => {
+                this.debouncedRefresh();
             })
         );
 
         this.registerEvent(
-            this.app.vault.on('rename', () => {
-                this.refreshViews();
+            this.app.vault.on('rename', (file, oldPath) => {
+                this.debouncedRefresh();
+            })
+        );
+
+        // Listen for metadata changes (important for frontmatter updates)
+        this.registerEvent(
+            this.app.metadataCache.on('changed', (file) => {
+                this.debouncedRefresh();
             })
         );
     }
@@ -81,8 +89,8 @@ export default class FolderCalendarPlugin extends Plugin {
             // A calendar view is already open, use it
             leaf = leaves[0];
         } else {
-            // Create a new leaf in the right sidebar
-            leaf = workspace.getRightLeaf(false);
+            // Create a new leaf in the main editor area
+            leaf = workspace.getLeaf(true);
             if (leaf) {
                 await leaf.setViewState({
                     type: VIEW_TYPE_CALENDAR,
@@ -95,6 +103,19 @@ export default class FolderCalendarPlugin extends Plugin {
         if (leaf) {
             workspace.revealLeaf(leaf);
         }
+    }
+
+    debouncedRefresh() {
+        // Clear existing timeout
+        if (this.refreshTimeout) {
+            clearTimeout(this.refreshTimeout);
+        }
+
+        // Set new timeout to refresh after 300ms
+        this.refreshTimeout = setTimeout(() => {
+            this.refreshViews();
+            this.refreshTimeout = null;
+        }, 300);
     }
 
     refreshViews() {
