@@ -21,6 +21,21 @@ A Notion-style calendar view plugin for Obsidian that displays notes from a spec
 
 ## Installation
 
+### Via Obsidian Community Plugins (Recommended)
+
+1. Open Obsidian Settings → Community plugins
+2. Disable Safe Mode if prompted
+3. Click "Browse" and search for "Calendar View"
+4. Click "Install" then "Enable"
+
+### Manual Installation
+
+1. Download `main.js`, `manifest.json`, and `styles.css` from the
+   [latest release](https://github.com/fishfen/obsidian-calendar-view/releases/latest)
+2. Create a folder `<vault>/.obsidian/plugins/calendar-view/`
+3. Copy the three files into that folder
+4. Enable the plugin in Obsidian Settings → Community plugins
+
 ### For Development
 
 1. Clone this repository to your local machine
