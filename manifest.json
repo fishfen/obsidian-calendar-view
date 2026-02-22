@@ -3,7 +3,7 @@
   "name": "Calendar View",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
-  "description": "A Notion-style calendar view for managing notes in specific folders",
+  "description": "A Notion-style calendar view for managing notes in specific folders.",
   "author": "Mingyu Zhang",
   "authorUrl": "https://github.com/fishfen",
   "isDesktopOnly": false
