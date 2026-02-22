@@ -26,7 +26,6 @@ export const DateCell: React.FC<DateCellProps> = ({
     onNoteClick,
     onPreviewNote
 }) => {
-    const [isHovered, setIsHovered] = React.useState(false);
     const [showAll, setShowAll] = React.useState(false);
 
     const maxVisibleEvents = 3;
@@ -47,20 +46,16 @@ export const DateCell: React.FC<DateCellProps> = ({
     return (
         <div
             className={className}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
         >
             <div className="calendar-date-header">
                 <span className="calendar-date-number">{date.getDate()}</span>
-                {isHovered && (
-                    <button
-                        className="calendar-add-button"
-                        onClick={handleAddClick}
-                        aria-label="Add note"
-                    >
-                        +
-                    </button>
-                )}
+                <button
+                    className="calendar-add-button"
+                    onClick={handleAddClick}
+                    aria-label="Add note"
+                >
+                    +
+                </button>
             </div>
             <div className="calendar-date-content">
                 {visibleEvents.map((event, index) => (

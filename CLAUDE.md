@@ -1,8 +1,11 @@
 
-MUST See @project-design.md for the project overview
+MUST See @project-design.md and README.md for the project overview
 
-# test
+# update method
 - 用git管理项目的历史版本
+- 重大代码更新之后，更新project-design.md和readme.md中的project structure以反映修改。
+
+# test method
 - 用“软链接”本插件项目的方式，让代码修改之后，在Obsidian 可以预览插件实时更新
 - the path for the test vault is at:  /Users/flash/code/obsidian-dev
 

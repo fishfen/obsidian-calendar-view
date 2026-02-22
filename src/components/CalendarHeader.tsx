@@ -34,7 +34,6 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     const pickerRef = React.useRef<HTMLDivElement>(null);
     const folderRef = React.useRef<HTMLDivElement>(null);
     const yearScrollRef = React.useRef<HTMLDivElement>(null);
-    const monthScrollRef = React.useRef<HTMLDivElement>(null);
 
     const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -69,7 +68,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         };
     }, [showPicker, showFolderPicker]);
 
-    // Scroll to current year and month when picker opens
+    // Scroll to current year when picker opens
     React.useEffect(() => {
         if (showPicker) {
             if (yearScrollRef.current) {
@@ -81,14 +80,8 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
                     }
                 }
             }
-            if (monthScrollRef.current) {
-                const monthButton = monthScrollRef.current.children[currentMonth] as HTMLElement;
-                if (monthButton) {
-                    monthButton.scrollIntoView({ block: 'center' });
-                }
-            }
         }
-    }, [showPicker, currentYear, currentMonth, years]);
+    }, [showPicker, currentYear, years]);
 
     const handlePickerSelect = (year: number, month: number) => {
         onMonthYearChange(year, month);
@@ -140,7 +133,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
                                     </button>
                                 ))}
                             </div>
-                            <div className="calendar-month-selector" ref={monthScrollRef}>
+                            <div className="calendar-month-selector">
                                 {monthNames.map((month, index) => (
                                     <button
                                         key={month}
