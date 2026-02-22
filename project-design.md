@@ -49,7 +49,8 @@
 *   **悬停预览 (Hover Preview)**：
     *   鼠标悬停在卡片上指定时间后（默认500ms，可在设置中配置），弹出预览窗格。
     *   预览窗格显示笔记的前300字符（去除Frontmatter）。
-    *   预览窗格显示在卡片附近，自动调整位置避免超出视口。
+    *   预览窗格紧贴卡片某条边缘（8px 间距），自适应位置：垂直方向优先显示在卡片下方，空间不足则翻转到上方；水平方向优先与卡片左边对齐，溢出右边界则与卡片右边对齐；最终始终保持在视口内（16px 安全边距）。
+    *   使用 `ReactDOM.createPortal` 渲染到 `document.body`，避免 Obsidian workspace leaf 的 CSS transform 导致 `position: fixed` 坐标偏移问题。
     *   鼠标移开卡片时自动关闭预览（无需关闭按钮）。
     *   单击卡片仍然打开完整笔记。
 
@@ -95,8 +96,8 @@
 *   **CalendarHeader**: 导航头部，包含所有控件（月份选择器、导航按钮、Today按钮、文件夹显示、标签筛选器）。
 *   **CalendarGrid**: 日历网格容器。
 *   **DateCell**: 单个日期单元格，包含日期数字和笔记卡片列表。
-*   **NoteCard**: 笔记卡片，支持悬停预览。
-*   **NotePreview**: 预览窗格组件（无关闭按钮，鼠标移开自动关闭）。
+*   **NoteCard**: 笔记卡片，悬停时快照卡片的 `DOMRect`（`CardRect` 类型）并触发预览回调。
+*   **NotePreview**: 预览窗格组件（无关闭按钮，鼠标移开自动关闭）。通过 `ReactDOM.createPortal` 渲染到 `document.body`，使用 `useLayoutEffect` 根据卡片四条边的坐标智能计算贴边位置，避免超出视口。
 
 ## 4. UI 设计规范 (Visual Specs)
 
@@ -123,7 +124,8 @@
 *   **头部控件**：所有控件位于同一行，包括导航按钮、年月选择、Today按钮、文件夹选择、标签筛选器，支持自适应换行。
 *   **预览窗格**：
     *   固定宽度400px，最大高度500px。
-    *   显示在卡片附近，自动调整位置避免超出视口。
+    *   贴卡片边缘显示（8px 间距）：垂直优先卡片下方，空间不足翻转到上方；水平优先左对齐，溢出右边界则右对齐。
+    *   通过 `ReactDOM.createPortal` 挂载到 `document.body`，保证 `position: fixed` 坐标与 `getBoundingClientRect()` 一致，不受 Obsidian 容器 transform 影响。
     *   无关闭按钮，鼠标移开卡片时自动关闭。
     *   带阴影和边框，适配暗色/亮色主题。
 

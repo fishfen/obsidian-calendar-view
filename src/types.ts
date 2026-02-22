@@ -14,6 +14,15 @@ export const DEFAULT_SETTINGS: FolderCalendarSettings = {
     hoverPreviewDelay: 500
 };
 
+export interface CardRect {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+    width: number;
+    height: number;
+}
+
 export interface NoteEvent {
     file: string;
     title: string;

@@ -1,24 +1,62 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { App, TFile } from 'obsidian';
+import { CardRect } from '../types';
+
+const CARD_GAP = 8;
+const VIEWPORT_MARGIN = 16;
+
+function calculatePosition(
+    cardRect: CardRect,
+    previewWidth: number,
+    previewHeight: number,
+    viewportWidth: number,
+    viewportHeight: number
+): { x: number; y: number } {
+    // Vertical: prefer below, fall back to above
+    const spaceBelow = viewportHeight - VIEWPORT_MARGIN - (cardRect.bottom + CARD_GAP);
+    const spaceAbove = cardRect.top - CARD_GAP - VIEWPORT_MARGIN;
+
+    let y: number;
+    if (spaceBelow >= previewHeight || spaceBelow >= spaceAbove) {
+        y = cardRect.bottom + CARD_GAP;
+    } else {
+        y = cardRect.top - previewHeight - CARD_GAP;
+    }
+
+    // Horizontal: left-align with card, fall back to right-align
+    let x = cardRect.left;
+    if (x + previewWidth > viewportWidth - VIEWPORT_MARGIN) {
+        x = cardRect.right - previewWidth;
+    }
+
+    // Final clamp to stay within viewport
+    x = Math.max(VIEWPORT_MARGIN, Math.min(x, viewportWidth - previewWidth - VIEWPORT_MARGIN));
+    y = Math.max(VIEWPORT_MARGIN, Math.min(y, viewportHeight - previewHeight - VIEWPORT_MARGIN));
+
+    return { x, y };
+}
 
 interface NotePreviewProps {
     filePath: string;
     app: App;
     onClose: () => void;
-    position: { x: number; y: number };
+    cardRect: CardRect;
 }
 
-export const NotePreview: React.FC<NotePreviewProps> = ({ filePath, app, onClose, position }) => {
+export const NotePreview: React.FC<NotePreviewProps> = ({ filePath, app, onClose, cardRect }) => {
     const [content, setContent] = React.useState<string>('');
     const [loading, setLoading] = React.useState(true);
     const previewRef = React.useRef<HTMLDivElement>(null);
+    const [adjustedPosition, setAdjustedPosition] = React.useState<{ x: number; y: number }>(
+        { x: cardRect.left, y: cardRect.bottom + CARD_GAP }
+    );
 
     React.useEffect(() => {
         const loadContent = async () => {
             const file = app.vault.getAbstractFileByPath(filePath);
             if (file instanceof TFile) {
                 const text = await app.vault.read(file);
-                // Extract first 300 characters, remove frontmatter
                 const withoutFrontmatter = text.replace(/^---[\s\S]*?---\n/, '');
                 const preview = withoutFrontmatter.slice(0, 300);
                 setContent(preview + (withoutFrontmatter.length > 300 ? '...' : ''));
@@ -29,37 +67,20 @@ export const NotePreview: React.FC<NotePreviewProps> = ({ filePath, app, onClose
         loadContent();
     }, [filePath, app]);
 
-    // Calculate position to stay within viewport
-    const [adjustedPosition, setAdjustedPosition] = React.useState(position);
+    React.useLayoutEffect(() => {
+        if (!previewRef.current) return;
+        const rect = previewRef.current.getBoundingClientRect();
+        const pos = calculatePosition(
+            cardRect,
+            rect.width,
+            rect.height,
+            window.innerWidth,
+            window.innerHeight
+        );
+        setAdjustedPosition(pos);
+    }, [cardRect, content, loading]);
 
-    React.useEffect(() => {
-        if (previewRef.current) {
-            const rect = previewRef.current.getBoundingClientRect();
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-
-            let x = position.x;
-            let y = position.y;
-
-            // Adjust if preview goes off right edge
-            if (x + rect.width > viewportWidth - 20) {
-                x = viewportWidth - rect.width - 20;
-            }
-
-            // Adjust if preview goes off bottom edge
-            if (y + rect.height > viewportHeight - 20) {
-                y = viewportHeight - rect.height - 20;
-            }
-
-            // Ensure not off left or top edge
-            x = Math.max(20, x);
-            y = Math.max(20, y);
-
-            setAdjustedPosition({ x, y });
-        }
-    }, [position, content]);
-
-    return (
+    return ReactDOM.createPortal(
         <div
             ref={previewRef}
             className="calendar-note-preview"
@@ -80,6 +101,7 @@ export const NotePreview: React.FC<NotePreviewProps> = ({ filePath, app, onClose
                     <div className="calendar-note-preview-text">{content}</div>
                 )}
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };

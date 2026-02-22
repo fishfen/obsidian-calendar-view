@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { App, TFolder } from 'obsidian';
-import { NoteEvent, FolderCalendarSettings } from '../types';
+import { NoteEvent, FolderCalendarSettings, CardRect } from '../types';
 import { CalendarHeader } from './CalendarHeader';
 import { CalendarGrid } from './CalendarGrid';
 import { NotePreview } from './NotePreview';
@@ -25,7 +25,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const [currentDate, setCurrentDate] = React.useState(new Date());
     const [currentFolder, setCurrentFolder] = React.useState(settings.sourceFolder);
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
-    const [previewNote, setPreviewNote] = React.useState<{ path: string; position: { x: number; y: number } } | null>(null);
+    const [previewNote, setPreviewNote] = React.useState<{ path: string; cardRect: CardRect } | null>(null);
 
     // Update current folder when settings change
     React.useEffect(() => {
@@ -105,12 +105,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         return folders;
     };
 
-    const handlePreviewNote = (filePath: string, position: { x: number; y: number }) => {
-        // If position is negative, close the preview
-        if (position.x < 0 || position.y < 0) {
+    const handlePreviewNote = (filePath: string, cardRect: CardRect | null) => {
+        if (!cardRect) {
             setPreviewNote(null);
         } else {
-            setPreviewNote({ path: filePath, position });
+            setPreviewNote({ path: filePath, cardRect });
         }
     };
 
@@ -154,7 +153,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <NotePreview
                     filePath={previewNote.path}
                     app={app}
-                    position={previewNote.position}
+                    cardRect={previewNote.cardRect}
                     onClose={handleClosePreview}
                 />
             )}

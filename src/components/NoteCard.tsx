@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { NoteEvent, FolderCalendarSettings } from '../types';
+import { NoteEvent, FolderCalendarSettings, CardRect } from '../types';
 
 interface NoteCardProps {
     event: NoteEvent;
     settings: FolderCalendarSettings;
     onClick: () => void;
-    onPreview: (position: { x: number; y: number }) => void;
+    onPreview: (cardRect: CardRect | null) => void;
 }
 
 export const NoteCard: React.FC<NoteCardProps> = ({ event, settings, onClick, onPreview }) => {
@@ -13,16 +13,20 @@ export const NoteCard: React.FC<NoteCardProps> = ({ event, settings, onClick, on
     const cardRef = React.useRef<HTMLDivElement>(null);
 
     const handleMouseEnter = (e: React.MouseEvent) => {
-        const rect = cardRef.current?.getBoundingClientRect();
-        if (!rect) return;
+        const domRect = cardRef.current?.getBoundingClientRect();
+        if (!domRect) return;
 
-        const position = {
-            x: rect.left,
-            y: rect.bottom + 5
+        const cardRect: CardRect = {
+            top: domRect.top,
+            bottom: domRect.bottom,
+            left: domRect.left,
+            right: domRect.right,
+            width: domRect.width,
+            height: domRect.height,
         };
 
         const timeout = setTimeout(() => {
-            onPreview(position);
+            onPreview(cardRect);
         }, settings.hoverPreviewDelay);
 
         setHoverTimeout(timeout);
@@ -33,8 +37,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({ event, settings, onClick, on
             clearTimeout(hoverTimeout);
             setHoverTimeout(null);
         }
-        // Close preview by passing a negative position
-        onPreview({ x: -1, y: -1 });
+        onPreview(null);
     };
 
     const handleClick = (e: React.MouseEvent) => {

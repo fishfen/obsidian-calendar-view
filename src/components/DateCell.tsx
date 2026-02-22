@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { App } from 'obsidian';
-import { NoteEvent, FolderCalendarSettings } from '../types';
+import { NoteEvent, FolderCalendarSettings, CardRect } from '../types';
 import { NoteCard } from './NoteCard';
 
 interface DateCellProps {
@@ -12,7 +12,7 @@ interface DateCellProps {
     app: App;
     onDateClick: (date: Date) => void;
     onNoteClick: (filePath: string) => void;
-    onPreviewNote: (filePath: string, position: { x: number; y: number }) => void;
+    onPreviewNote: (filePath: string, cardRect: CardRect | null) => void;
 }
 
 export const DateCell: React.FC<DateCellProps> = ({
@@ -64,7 +64,7 @@ export const DateCell: React.FC<DateCellProps> = ({
                         event={event}
                         settings={settings}
                         onClick={() => onNoteClick(event.file)}
-                        onPreview={(position) => onPreviewNote(event.file, position)}
+                        onPreview={(cardRect) => onPreviewNote(event.file, cardRect)}
                     />
                 ))}
                 {!showAll && hiddenCount > 0 && (

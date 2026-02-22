@@ -8,6 +8,7 @@ A Notion-style calendar view plugin for Obsidian that displays notes from a spec
 - **Folder-based**: Display notes from any chosen folder in your vault
 - **Date Mapping**: Uses YAML frontmatter date fields to place notes on calendar
 - **Note Cards**: Display notes as cards with icons, titles, and custom properties
+- **Hover Preview**: Hover over a note card to see a preview of its content; auto-dismisses when mouse leaves
 - **Quick Actions**:
   - Click cards to open notes
   - Hover over dates and click '+' to create new notes
@@ -103,7 +104,8 @@ obsidian-calendar/
 │       ├── CalendarHeader.tsx  # Month navigation header
 │       ├── CalendarGrid.tsx    # Calendar grid layout
 │       ├── DateCell.tsx        # Individual date cells
-│       └── NoteCard.tsx        # Note card display
+│       ├── NoteCard.tsx        # Note card display
+│       └── NotePreview.tsx     # Hover preview popup (portal-rendered)
 ├── styles.css                  # Plugin styles
 └── manifest.json               # Plugin metadata
 ```

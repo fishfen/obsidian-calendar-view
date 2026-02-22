@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { App } from 'obsidian';
-import { NoteEvent, FolderCalendarSettings } from '../types';
+import { NoteEvent, FolderCalendarSettings, CardRect } from '../types';
 import { DateCell } from './DateCell';
 
 interface CalendarGridProps {
@@ -10,7 +10,7 @@ interface CalendarGridProps {
     app: App;
     onDateClick: (date: Date) => void;
     onNoteClick: (filePath: string) => void;
-    onPreviewNote: (filePath: string, position: { x: number; y: number }) => void;
+    onPreviewNote: (filePath: string, cardRect: CardRect | null) => void;
 }
 
 export const CalendarGrid: React.FC<CalendarGridProps> = ({
