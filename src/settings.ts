@@ -13,11 +13,11 @@ export class FolderCalendarSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'Calendar View Settings' });
+        new Setting(containerEl).setName('Calendar view settings').setHeading();
 
         // Source Folder Setting
         new Setting(containerEl)
-            .setName('Source Folder')
+            .setName('Source folder')
             .setDesc('Select the folder to display in the calendar view')
             .addDropdown(dropdown => {
                 const folders = this.getFolderList();
@@ -35,7 +35,7 @@ export class FolderCalendarSettingTab extends PluginSettingTab {
 
         // Date Field Setting
         new Setting(containerEl)
-            .setName('Date Field')
+            .setName('Date field')
             .setDesc('The YAML frontmatter field to use for date (e.g., "date" or "created")')
             .addText(text => text
                 .setPlaceholder('date')
@@ -48,7 +48,7 @@ export class FolderCalendarSettingTab extends PluginSettingTab {
 
         // Display Properties Setting
         new Setting(containerEl)
-            .setName('Display Properties')
+            .setName('Display properties')
             .setDesc('Comma-separated list of frontmatter properties to display on cards (e.g., "tags,category,status")')
             .addTextArea(text => text
                 .setPlaceholder('tags,category,status')
@@ -64,7 +64,7 @@ export class FolderCalendarSettingTab extends PluginSettingTab {
 
         // Start of Week Setting
         new Setting(containerEl)
-            .setName('Start of Week')
+            .setName('Start of week')
             .setDesc('Choose which day the week starts on')
             .addDropdown(dropdown => dropdown
                 .addOption('monday', 'Monday')
@@ -78,7 +78,7 @@ export class FolderCalendarSettingTab extends PluginSettingTab {
 
         // Hover Preview Delay Setting
         new Setting(containerEl)
-            .setName('Hover Preview Delay')
+            .setName('Hover preview delay')
             .setDesc('Time in milliseconds before showing note preview on hover (default: 500)')
             .addText(text => text
                 .setPlaceholder('500')

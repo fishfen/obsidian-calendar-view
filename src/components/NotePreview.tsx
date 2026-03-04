@@ -64,7 +64,7 @@ export const NotePreview: React.FC<NotePreviewProps> = ({ filePath, app, onClose
             setLoading(false);
         };
 
-        loadContent();
+        void loadContent();
     }, [filePath, app]);
 
     React.useLayoutEffect(() => {

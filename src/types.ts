@@ -28,5 +28,5 @@ export interface NoteEvent {
     title: string;
     date: Date;
     icon?: string;
-    properties: Record<string, any>;
+    properties: Record<string, unknown>;
 }

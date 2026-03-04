@@ -40,7 +40,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 const tags = Array.isArray(event.properties.tags)
                     ? event.properties.tags
                     : [event.properties.tags];
-                tags.forEach((tag: any) => tagSet.add(String(tag)));
+                tags.forEach((tag: unknown) => tagSet.add(String(tag)));
             }
         });
         return Array.from(tagSet).sort();

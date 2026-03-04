@@ -22,27 +22,29 @@ export class CalendarViewType extends ItemView {
     }
 
     getDisplayText(): string {
-        return 'Calendar View';
+        return 'Calendar view';
     }
 
     getIcon(): string {
         return 'calendar';
     }
 
-    async onOpen(): Promise<void> {
+    onOpen(): Promise<void> {
         const container = this.containerEl.children[1];
         container.empty();
         container.addClass('folder-calendar-view');
 
         this.root = ReactDOM.createRoot(container);
         this.renderCalendar();
+        return Promise.resolve();
     }
 
-    async onClose(): Promise<void> {
+    onClose(): Promise<void> {
         if (this.root) {
             this.root.unmount();
             this.root = null;
         }
+        return Promise.resolve();
     }
 
     renderCalendar(): void {
@@ -94,7 +96,7 @@ export class CalendarViewType extends ItemView {
             const title = cache.frontmatter.title || file.basename;
             const icon = cache.frontmatter.icon;
 
-            const properties: Record<string, any> = {};
+            const properties: Record<string, unknown> = {};
             for (const prop of this.plugin.settings.displayProperties) {
                 if (cache.frontmatter[prop]) {
                     properties[prop] = cache.frontmatter[prop];
@@ -113,7 +115,7 @@ export class CalendarViewType extends ItemView {
         return events;
     }
 
-    parseDate(value: any): Date | null {
+    parseDate(value: unknown): Date | null {
         if (!value) return null;
 
         try {
@@ -121,7 +123,7 @@ export class CalendarViewType extends ItemView {
                 return value;
             }
 
-            const date = new Date(value);
+            const date = new Date(value as string | number);
             if (isNaN(date.getTime())) {
                 return null;
             }

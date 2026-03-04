@@ -49,7 +49,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({ event, settings, onClick, on
         onClick();
     };
 
-    const renderProperty = (key: string, value: any) => {
+    const renderProperty = (key: string, value: unknown) => {
         if (Array.isArray(value)) {
             return value.map((item, index) => (
                 <span key={`${key}-${index}`} className="calendar-tag">

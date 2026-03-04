@@ -17,16 +17,16 @@ export default class FolderCalendarPlugin extends Plugin {
         );
 
         // Add ribbon icon
-        this.addRibbonIcon('calendar', 'Open Calendar View', () => {
-            this.activateView();
+        this.addRibbonIcon('calendar', 'Open calendar view', () => {
+            void this.activateView();
         });
 
         // Add command to open calendar
         this.addCommand({
-            id: 'open-calendar-view',
-            name: 'Open Calendar View',
+            id: 'open',
+            name: 'Open',
             callback: () => {
-                this.activateView();
+                void this.activateView();
             }
         });
 
@@ -66,11 +66,6 @@ export default class FolderCalendarPlugin extends Plugin {
         );
     }
 
-    onunload() {
-        // Cleanup: detach all calendar views
-        this.app.workspace.detachLeavesOfType(VIEW_TYPE_CALENDAR);
-    }
-
     async loadSettings() {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
     }
@@ -101,7 +96,7 @@ export default class FolderCalendarPlugin extends Plugin {
 
         // Reveal the leaf
         if (leaf) {
-            workspace.revealLeaf(leaf);
+            void workspace.revealLeaf(leaf);
         }
     }
 
