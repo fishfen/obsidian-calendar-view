@@ -1,6 +1,6 @@
 {
   "name": "obsidian-folder-calendar",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Notion-style calendar view for specific folders in Obsidian",
   "main": "main.js",
   "scripts": {

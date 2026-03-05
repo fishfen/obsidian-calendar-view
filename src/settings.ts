@@ -13,8 +13,6 @@ export class FolderCalendarSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        new Setting(containerEl).setName('Calendar view settings').setHeading();
-
         // Source Folder Setting
         new Setting(containerEl)
             .setName('Source folder')
@@ -38,7 +36,7 @@ export class FolderCalendarSettingTab extends PluginSettingTab {
             .setName('Date field')
             .setDesc('The YAML frontmatter field to use for date (e.g., "date" or "created")')
             .addText(text => text
-                .setPlaceholder('date')
+                .setPlaceholder('Date')
                 .setValue(this.plugin.settings.dateField)
                 .onChange(async (value) => {
                     this.plugin.settings.dateField = value || 'date';
@@ -51,7 +49,7 @@ export class FolderCalendarSettingTab extends PluginSettingTab {
             .setName('Display properties')
             .setDesc('Comma-separated list of frontmatter properties to display on cards (e.g., "tags,category,status")')
             .addTextArea(text => text
-                .setPlaceholder('tags,category,status')
+                .setPlaceholder('Tags, category, status')
                 .setValue(this.plugin.settings.displayProperties.join(','))
                 .onChange(async (value) => {
                     this.plugin.settings.displayProperties = value
